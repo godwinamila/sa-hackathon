@@ -14,6 +14,7 @@ public type Catalog record {
 configurable string USER = ?;
 configurable string PASSWORD = ?;
 configurable string HOST = ?;
+
 int PORT = 3306;
 string DATABASE = "godwin_db";
 
@@ -43,7 +44,7 @@ public distinct service class CatalogData {
     }
 }
 
-service /covid19 on new graphql:Listener(9000) {
+service /catalogs on new graphql:Listener(9000) {
     resource function get all() returns Catalog[]|error {
         io:println("Execute get all catalog API.");
         Catalog[] catalogarr = [];
@@ -51,16 +52,28 @@ service /covid19 on new graphql:Listener(9000) {
 
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
         sql:ParameterizedQuery query = `SELECT * FROM catalog`;
-        Catalog[] catalogs = check dbClient->queryRow(query);
-        return catalogs;
-        // Catalog[] catalogEntries = catalogTable.toArray().cloneReadOnly();
-        // return catalogEntries.map(entry => new Catalog(entry));
+        // Catalog[] catalogs = check dbClient->query(query);
+
+
+        // sql:ParameterizedQuery query = 'SELECT * FROM catalog';
+        stream<Catalog, sql:Error?> resultStream = dbClient->query(query);
+
+        Catalog[] catalogs = [];
+        check from Catalog catalog in resultStream 
+            do {
+                // Can perform operations using the record 'student'.
+                io:println("description: ", catalog.description);
+                io:println("item price: ", catalog.unit_price);
+                catalogs.push(catalog);
+            };
+
+        return catalogs;        
     }
 
     resource function get filter(int id) returns Catalog|error {
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
         sql:ParameterizedQuery query = `SELECT * FROM catalog WHERE item_id = ${id}`;
-        Catalog catalog = check dbClient->queryRow(query);
+        Catalog|error catalog =  dbClient->queryRow(query);
         return catalog;
     }
 
