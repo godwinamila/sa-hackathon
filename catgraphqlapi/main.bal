@@ -19,8 +19,8 @@ string DATABASE = "godwin_db";
 
 table<Catalog> key(item_id) catalogTable = table [
     {item_id: 1, description: "test1", unit_price: 159303},
-    {item_id: 1, description: "test2", unit_price: 159303},
-    {item_id: 1, description: "test3", unit_price: 159303}
+    {item_id: 2, description: "test2", unit_price: 159303},
+    {item_id: 3, description: "test3", unit_price: 159303}
 ];
 
 public distinct service class CatalogData {
