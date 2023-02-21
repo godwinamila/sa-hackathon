@@ -15,49 +15,40 @@ type Catalog record {
 configurable string USER = ?;
 configurable string PASSWORD = ?;
 configurable string HOST = ?;
-configurable int PORT = ?;
-configurable string DATABASE = ?;
 
-service / on new http:Listener(9090) {
+int PORT = 3306;
+string DATABASE = "godwin_db";
+
+service / on new http:Listener(9000) {
 
     
 
     function init() returns error? {
         io:println("Init Catalog service!");
     }
+    
 
-    resource function get catalog() returns Catalog[]|error {
-        io:println("Execute get all catalog API.");
-        Catalog[] catalogarr = [];
-        catalogarr.push({"item_id" : 1, "description" : "Test1", "unit_price" : 120});
+    resource function post catalogs(@http:Payload Catalog catalog) returns http:Ok|http:BadRequest|error {
+        
+        io:println("Invoke catalogs create resource");        
 
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
-        sql:ParameterizedQuery query = `SELECT * FROM catalog`;
-        Catalog[] catalogs = check dbClient->queryRow(query);
-        return catalogs;
-    }
-
-    resource function get catalog/[string catalogid]() returns Catalog|error {
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
-        sql:ParameterizedQuery query = `SELECT * FROM catalog WHERE item_id = ${catalogid}`;
-        Catalog catalog = check dbClient->queryRow(query);
-        return catalog;
-    }
-
-    resource function post catalog(@http:Payload Catalog catalog)
-                                    returns Catalog|CatalogCodesError|error {
-                        
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
-        sql:ParameterizedQuery query = `INSERT INTO catalog(description, name)VALUES (${catalog.description}, ${catalog.unit_price})`;
+        sql:ParameterizedQuery query = `INSERT INTO catalog(description, unit_price)VALUES (${catalog.description}, ${catalog.unit_price})`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
-        return catalog;
-
+        http:Ok response = {body: {status: "ok"}};
+        return response;
     }
 
-    resource function put catalog(@http:Payload Catalog catalog)
-                                    returns Catalog|CatalogCodesError {
-        return catalog;
+
+    resource function put catalogs(@http:Payload Catalog catalog) returns http:Ok|http:BadRequest|error {
+        
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
+        sql:ParameterizedQuery query = `UPDATE catalog SET description=${catalog.description} , unit_price=${catalog.unit_price} WHERE item_id=${catalog.item_id}`;
+        sql:ExecutionResult result = check dbClient->execute(query);
+        
+        http:Ok response = {body: {status: "ok"}};
+        return response;
     }
         
 }
