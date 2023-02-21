@@ -40,12 +40,12 @@ service / on new http:Listener(9000) {
     }
 
 
-    resource function delete favourites(@http:Payload Favourite favourite) returns http:Ok|http:BadRequest|error {
+    resource function delete favourites(int item_id, string user_name) returns http:Ok|http:BadRequest|error {
         
         io:println("Invoke favourites delete resource");        
 
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
-        sql:ParameterizedQuery query = `DELETE FROM favourites where item_id=${favourite.item_id} AND user_name=${favourite.user_name}`;
+        sql:ParameterizedQuery query = `DELETE FROM favourites where item_id=${item_id} AND user_name=${user_name}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
         http:Ok response = {body: {status: "ok"}};
