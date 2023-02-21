@@ -21,11 +21,13 @@ string DATABASE = "godwin_db";
 
 service / on new http:Listener(9000) {
 
+    //create database connection
     
+
+
     function init() returns error? {
         io:println("Init Favourite service!");
-    }
-    
+    }    
 
     resource function post favourites(@http:Payload Favourite favourite) returns http:Ok|http:BadRequest|error {
         
