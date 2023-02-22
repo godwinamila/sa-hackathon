@@ -49,7 +49,7 @@ service / on new http:Listener(9000) {
     resource function put catalogs(@http:Payload Catalog catalog) returns http:Ok|http:BadRequest|error {
         
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
-        sql:ParameterizedQuery query = `UPDATE catalog SET description=${catalog.description} , unit_price=${catalog.unit_price} WHERE item_id=${catalog.item_id}`;
+        sql:ParameterizedQuery query = `UPDATE catalog SET description=${catalog.description} , unit_price=${catalog.unit_price}, title=${catalog.title},includes=${catalog.includes},intended=${catalog.intended},color=${catalog.color},material=${catalog.material} WHERE item_id=${catalog.item_id}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
         http:Ok response = {body: {status: "ok"}};
