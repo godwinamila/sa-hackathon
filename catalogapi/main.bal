@@ -9,7 +9,12 @@ import ballerinax/mysql.driver as _;
 type Catalog record {
         int item_id;
         string description;
-        decimal unit_price;  
+        decimal unit_price;
+        string title;  
+        string includes;  
+        string intended;  
+        string color;  
+        string material;  
 };
 
 configurable string USER = ?;
@@ -33,7 +38,7 @@ service / on new http:Listener(9000) {
         io:println("Invoke catalogs create resource");        
 
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
-        sql:ParameterizedQuery query = `INSERT INTO catalog(description, unit_price)VALUES (${catalog.description}, ${catalog.unit_price})`;
+        sql:ParameterizedQuery query = `INSERT INTO catalog(description, unit_price, title,includes,intended,color,material)VALUES (${catalog.description}, ${catalog.unit_price}, ${catalog.title}, ${catalog.includes}, ${catalog.intended}, ${catalog.color}, ${catalog.material}})`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
         http:Ok response = {body: {status: "ok"}};
@@ -48,7 +53,7 @@ service / on new http:Listener(9000) {
         sql:ExecutionResult result = check dbClient->execute(query);
         
         http:Ok response = {body: {status: "ok"}};
-        return response;
+        return response;        
     }
         
 }
