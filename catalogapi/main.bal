@@ -38,7 +38,7 @@ service / on new http:Listener(9000) {
         io:println("Invoke catalogs create resource");        
 
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
-        sql:ParameterizedQuery query = `INSERT INTO catalog(description, unit_price, title,includes,intended,color,material)VALUES (${catalog.description}, ${catalog.unit_price}, ${catalog.title}, ${catalog.includes}, ${catalog.intended}, ${catalog.color}, ${catalog.material}})`;
+        sql:ParameterizedQuery query = `INSERT INTO catalog(description, unit_price, title,includes,intended,color,material)VALUES (${catalog.description}, ${catalog.unit_price}, ${catalog.title}, ${catalog.includes}, ${catalog.intended}, ${catalog.color}, ${catalog.material})`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
         http:Ok response = {body: {status: "ok"}};
