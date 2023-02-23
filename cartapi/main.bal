@@ -25,7 +25,6 @@ type CartItemDetails record {
 };
 
 type CardDetails record {
-        int item_id;
         string name;
         string card_number;
         string expiration;
