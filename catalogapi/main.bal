@@ -40,9 +40,14 @@ service / on new http:Listener(9000) {
         return response;
     }
 
-    resource function delete test2(string catalogid) returns http:Ok {
+    resource function delete catalogs(string catalogid) returns http:Ok|http:BadRequest|error {
 
-        io:println("Invoke catalogs test2 resource");
+        io:println("Invoke catalogs delete resource");        
+
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE);
+        sql:ParameterizedQuery query = `DELETE FROM catalog WHERE item_id=${catalogid}`;
+        sql:ExecutionResult result = check dbClient->execute(query);
+        
         http:Ok response = {body: {status: "ok"}};
         return response;
     }
