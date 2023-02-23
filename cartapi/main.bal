@@ -15,13 +15,24 @@ type CartItem record {
         string user_name;
 };
 
-type CardDetails record {
+type CartItemDetails record {
         int cart_id;
-        int id;
+        int item_id;
+        int quantity;
+        decimal unit_price;
+        decimal total;
+};
+
+type CardDetails record {
+        int item_id;
         string name;
         string card_number;
         string expiration;
         string cvv;
+        int cart_id;
+        // int quantity;
+        // decimal unit_price;
+        // decimal total;
 };
 
 
@@ -34,10 +45,25 @@ string DATABASE = "godwin_db";
 
 service / on new http:Listener(9000) {
 
-
     function init() returns error? {
         io:println("Init Favourite service!");
     }    
+
+
+    resource function get cartitem() returns CartItemDetails[]|error {
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
+
+        io:println("Invoke cart item create resource");
+
+        sql:ParameterizedQuery querySelectCart = `select cart_items.item_id, catalog.title, cart_items.quantity, cart_items.unit_price , cart_items.quantity * cart_items.unit_price as total  from cart,cart_items,catalog  where cart.user_name = 'godwin' and cart_items.item_id  =catalog.item_id  and cart.status ='P' and cart.cart_id =cart_items.cart_id`;
+        stream<CartItemDetails, sql:Error?> resultStream = dbClient->query(querySelectCart);
+        CartItemDetails[] cartItems = [];
+        check from CartItemDetails item in resultStream 
+            do {
+                    cartItems.push(item);
+            };
+        return cartItems;        
+    }
 
     resource function post cartitem(@http:Payload CartItem cartitem) returns http:Ok|http:BadRequest|error {
         final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
