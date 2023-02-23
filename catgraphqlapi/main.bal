@@ -70,7 +70,7 @@ service /catalogs on new graphql:Listener(9000) {
     resource function get all() returns Catalog[]|error {
         io:println("Execute get all catalog API.");
         Catalog[] catalogarr = [];
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
         sql:ParameterizedQuery query = `SELECT * FROM catalog`;
         // Catalog[] catalogs = check dbClient->query(query);
 
@@ -91,7 +91,7 @@ service /catalogs on new graphql:Listener(9000) {
     }
 
     resource function get filter(int id) returns Catalog|error {
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE,connectionPool={maxOpenConnections: 3});
         sql:ParameterizedQuery query = `SELECT * FROM catalog WHERE item_id = ${id}`;
         Catalog|error catalog =  dbClient->queryRow(query);
         return catalog;

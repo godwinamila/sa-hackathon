@@ -25,11 +25,15 @@ type CartItemDetails record {
 };
 
 type CardDetails record {
-        string name;
         string card_number;
-        string expiration;
-        string cvv;
         int cart_id;
+        string cvv;
+        string expiration;
+        string name;
+        
+        
+        
+        
 };
 
 

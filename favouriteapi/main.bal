@@ -33,7 +33,7 @@ service / on new http:Listener(9000) {
         
         io:println("Invoke favourites create resource");        
 
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
         sql:ParameterizedQuery query = `INSERT INTO favourites(item_id, user_name)VALUES (${favourite.item_id}, ${favourite.user_name})`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
@@ -46,7 +46,7 @@ service / on new http:Listener(9000) {
         
         io:println("Invoke favourites delete resource");        
 
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE,connectionPool={maxOpenConnections: 3});
         sql:ParameterizedQuery query = `DELETE FROM favourites where item_id=${item_id} AND user_name=${user_name}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
