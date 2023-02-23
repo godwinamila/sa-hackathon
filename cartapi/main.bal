@@ -18,6 +18,7 @@ type CartItem record {
 type CartItemDetails record {
         int cart_id;
         int item_id;
+        string title;
         int quantity;
         decimal unit_price;
         decimal total;
@@ -30,9 +31,6 @@ type CardDetails record {
         string expiration;
         string cvv;
         int cart_id;
-        // int quantity;
-        // decimal unit_price;
-        // decimal total;
 };
 
 
@@ -55,7 +53,7 @@ service / on new http:Listener(9000) {
 
         io:println("Invoke cart item create resource");
 
-        sql:ParameterizedQuery querySelectCart = `select cart_items.item_id, catalog.title, cart_items.quantity, cart_items.unit_price , cart_items.quantity * cart_items.unit_price as total  from cart,cart_items,catalog  where cart.user_name = 'godwin' and cart_items.item_id  =catalog.item_id  and cart.status ='P' and cart.cart_id =cart_items.cart_id`;
+        sql:ParameterizedQuery querySelectCart = `select cart_items.cart_id, cart_items.item_id, catalog.title, cart_items.quantity, cart_items.unit_price , cart_items.quantity * cart_items.unit_price as total  from cart,cart_items,catalog  where cart.user_name = 'godwin' and cart_items.item_id  =catalog.item_id  and cart.status ='P' and cart.cart_id =cart_items.cart_id`;
         stream<CartItemDetails, sql:Error?> resultStream = dbClient->query(querySelectCart);
         CartItemDetails[] cartItems = [];
         check from CartItemDetails item in resultStream 
