@@ -32,6 +32,20 @@ service / on new http:Listener(9000) {
         io:println("Init Catalog service!");
     }
     
+    resource function delete catalogs/[string catalogid]() returns http:Ok|http:BadRequest|error {
+
+        //ballerina rest api path paramaters
+
+        
+        io:println("Invoke catalogs delete resource");        
+
+        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database="godwin_db");
+        sql:ParameterizedQuery query = `DELETE FROM catalog WHERE item_id=${catalogid}`;
+        sql:ExecutionResult result = check dbClient->execute(query);
+        
+        http:Ok response = {body: {status: "ok"}};
+        return response;
+    }
 
     resource function post catalogs(@http:Payload Catalog catalog) returns http:Ok|http:BadRequest|error {
         

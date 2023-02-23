@@ -16,6 +16,8 @@ public type Catalog record {
 
 };
 
+
+
 configurable string USER = ?;
 configurable string PASSWORD = ?;
 configurable string HOST = ?;
