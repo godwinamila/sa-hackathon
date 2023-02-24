@@ -29,11 +29,7 @@ type CardDetails record {
         int cart_id;
         string cvv;
         string expiration;
-        string name;
-        
-        
-        
-        
+        string name;        
 };
 
 
@@ -43,6 +39,7 @@ configurable string HOST = ?;
 
 int PORT = 3306;
 string DATABASE = "godwin_db";
+final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
 
 service / on new http:Listener(9000) {
 
@@ -52,7 +49,6 @@ service / on new http:Listener(9000) {
 
 
     resource function get cartitem() returns CartItemDetails[]|error {
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
 
         io:println("Invoke cart item create resource");
 
@@ -67,7 +63,6 @@ service / on new http:Listener(9000) {
     }
 
     resource function post cartitem(@http:Payload CartItem cartitem) returns http:Ok|http:BadRequest|error {
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
 
         io:println("Invoke cart item create resource");
 
@@ -133,8 +128,6 @@ service / on new http:Listener(9000) {
 
     resource function post checkout(@http:Payload CardDetails carddetails) returns http:Ok|http:BadRequest|error {
         io:println("Invoke checkout resource");
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
-
         sql:ParameterizedQuery insertQueries = `INSERT INTO card_details(name, card_number, expiration, cvv, cart_id)VALUES (${carddetails.name}, ${carddetails.card_number}, ${carddetails.expiration}, ${carddetails.cvv}, ${carddetails.cart_id})`;
         sql:ExecutionResult result = check dbClient->execute(insertQueries);
         

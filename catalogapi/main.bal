@@ -24,6 +24,9 @@ configurable string HOST = ?;
 int PORT = 3306;
 string DATABASE = "godwin_db";
 
+final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
+
+
 service / on new http:Listener(9000) {
 
     
@@ -44,7 +47,6 @@ service / on new http:Listener(9000) {
 
         io:println("Invoke catalogs delete resource");        
 
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
         sql:ParameterizedQuery query = `DELETE FROM catalog WHERE item_id=${catalogid}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
@@ -56,7 +58,6 @@ service / on new http:Listener(9000) {
 
         io:println("Invoke catalogs delete resource");        
 
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
         sql:ParameterizedQuery query = `DELETE FROM catalog WHERE item_id=${catalogid}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
@@ -68,7 +69,6 @@ service / on new http:Listener(9000) {
         
         io:println("Invoke catalogs create resource");        
 
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
         sql:ParameterizedQuery query = `INSERT INTO catalog(description, unit_price, title,includes,intended,color,material)VALUES (${catalog.description}, ${catalog.unit_price}, ${catalog.title}, ${catalog.includes}, ${catalog.intended}, ${catalog.color}, ${catalog.material})`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
@@ -78,8 +78,7 @@ service / on new http:Listener(9000) {
 
 
     resource function put catalogs(@http:Payload Catalog catalog) returns http:Ok|http:BadRequest|error {
-        
-        final mysql:Client dbClient = check new(host=HOST, user=USER, password=PASSWORD, port=PORT, database=DATABASE, connectionPool={maxOpenConnections: 3});
+                
         sql:ParameterizedQuery query = `UPDATE catalog SET description=${catalog.description} , unit_price=${catalog.unit_price}, title=${catalog.title},includes=${catalog.includes},intended=${catalog.intended},color=${catalog.color},material=${catalog.material} WHERE item_id=${catalog.item_id}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         
