@@ -2,7 +2,8 @@ import ballerina/io;
 import ballerina/http;
 // import ballerinax/mysql;
 // import ballerina/sql;
-import ballerinax/mysql.driver as _;
+// import ballerinax/mysql.driver as _;
+import ballerina/os;
 
 
 
@@ -33,6 +34,8 @@ service / on new http:Listener(9000) {
 
     function init() returns error? {
         io:println("Init Catalog service!");
+        string dbpassword = os:getEnv("dbpasswordtest");
+        io:println("################ dbpassword " + dbpassword);
     
     }
     
